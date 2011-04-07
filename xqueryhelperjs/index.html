@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!--
+("Unlicense")
+This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
+
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>   
+    <title>XQueryHelper Sample page</title>
+    <meta charset="UTF-8"/>
+    <script type="text/javascript" src="xqib-0.7-alpha2/mxqueryjs/mxqueryjs.nocache.js"></script>
+    <script type="text/javascript" src="XQueryHelper.js"></script>
+    <script>
+    window.onload = function () {
+        
+        // PLEASE READ THE DISCLAIMERS IN THE XQUERYHELPER.JS FILE; THERE ARE SECURITY RISKS HERE IF USING UNTRUSTED DATA
+        
+        var xh = XQueryHelper();
+       
+        xh.runXQIB('b:alert(b:dom()//body)', function () {
+            alert('Optional XQIB return callback');
+        });
+
+        xh.insertXQuery(
+            '\
+              for $i in (1 to 3)\
+              let $x := <a><b>2</b><c>4</c></a>\
+              return <div style="color:red;">{xs:string($x/b * $x/c)}</div>\
+            ', 
+            '//h1',
+            function () {
+                alert('optional insert return callback');
+            }
+        );
+        // Also demonstrate current ability to simply use the class method instead of an object (since no configuration options currently)
+        XQueryHelper.getXQueryResult('\
+              for $i in (1 to 3)\
+              let $x := <a><b>2</b><c>4</c></a>\
+              return <div>{xs:string($x/b * $x/c)}</div>\
+            ',
+            function (text) {
+                alert('Got it!: ' + text);
+            }
+        );
+    };
+    </script>
+    <!-- With the XQueryHelper class, this approach is no longer the only one possible, though if 
+                the next script tag is uncommented,  it will show that such declarative XQIB XQueries 
+                can also be used in conjunction with dynamic JS evaluation -->
+    <!--
+    <script type="application/xquery">
+       b:alert("Hello World as application/xquery script tag content")
+    </script>
+        -->
+  </head>
+  <body>
+    <h1>XQueryHelper Hello world page.</h1>
+    <p>This page demonstrates the ability XQIB, with a little bit of wrapping help, to make XQuery calls from JavaScript via the XQueryHelper class, for immediate insertion or not (also intended to be named generically for portability with any other possible XQuery implementation of the future).</p>
+    <p>Also auto-detects &lt;script type="text/plain" language="xquery"> tags and, unlike the XQIB reliance on &lt;script type="text/plain">, these will not require browser-specific XQuery extensions (prologues currently not supported).</p>
+    <p>Note that this file will not work if run from the desktop; it must be placed on a server to work.</p>
+    <p>Enjoy the possibilities for strictly declarative, standard expression of code on the web. (Hoping to see a <a href="http://en.wikipedia.org/wiki/Server-side_JavaScript"><abbr title="Server-side JavaScript">SSJS</abbr></a> version made down the road, so the same can work on the server as well!)</p>
+    <p>See <a href="https://gist.github.com/900225">https://gist.github.com/900225</a> to get the XQueryHelper code (and this demo).</p>
+    <p>See <a href="http://www.xqib.org/?p=49">http://www.xqib.org/?p=49</a> for the XQIB code on which this kludge helper class depends.</p>
+    <!-- While one can continue to parse XQIB queries specified in scripts tags with type=application/xquery, 
+        we also allow the following here for pure XQueries (currently without support for prologues when used here) -->
+    <script type="text/plain" language="xquery">
+          for $i in (1 to 3)
+          let $x := <a><b>2</b><c>4</c></a>
+          return <small style="color:red;">{xs:string($x/b * $x/c)}</small>
+    </script>
+  </body>
+</html>

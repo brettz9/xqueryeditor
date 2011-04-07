@@ -1,0 +1,16 @@
+   =========================================================================
+   ==  NOTICE file corresponding to section 4(d) of the Apache License,   ==
+   ==  Version 2.0, in this case for the Micro XQuery distribution.       ==
+   =========================================================================
+
+   This product includes software developed by
+   the MXQuery Team at ETH Zurich
+
+  The distribution packages  of
+   this product includes software developed by the following:
+
+     - Stefan Haustein (kxml2,xml Pull Parser API) on the J2SE and J2ME version
+     - Apache Software Foundation (Java helper classes, Xerces)
+     - Robert Hanson (Regular Expressions from GWT widgets) for XQIB-JS
+     - GWT calendar project (time and calendar support) for XQIB-JS
+
