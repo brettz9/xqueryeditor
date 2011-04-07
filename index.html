@@ -33,6 +33,36 @@ OTHER DEALINGS IN THE SOFTWARE.
     <script type="text/javascript" src="xqueryhelperjs/XQueryHelper.js"></script>
     <title>XQuery Tester</title>
 <style type="text/css">
+h1 {text-align:center;}
+
+/* Ribbon from http://unindented.org/articles/2009/10/github-ribbon-using-css-transforms/ */
+.ribbon {
+    background-color: #a00;
+    overflow: hidden;
+    /* top left corner */
+    position: absolute;
+    left: -3em;
+    top: 2.5em;
+    /* 45 deg ccw rotation */
+    -moz-transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+    /* shadow */
+    -moz-box-shadow: 0 0 1em #888;
+    -webkit-box-shadow: 0 0 1em #888;
+}
+.ribbon a {
+    border: 1px solid #faa;
+    color: #fff;
+    display: block;
+    font: bold 81.25% 'Helvetiva Neue', Helvetica, Arial, sans-serif;
+    margin: 0.05em 0 0.075em 0;
+    padding: 0.5em 3.5em;
+    text-align: center;
+    text-decoration: none;
+    /* shadow */
+    text-shadow: 0 0 0.5em #444;
+}
+
 .CodeMirror-line-numbers {
     width: 2.2em;
     color: #aaa;
@@ -251,7 +281,11 @@ $(window).load(function() {
 
 
 </script>
-</head><body><div>
+</head><body>
+  <div class="ribbon">
+    <a href="https://github.com/brettz9/xqueryeditor">Fork me on GitHub</a>
+  </div>
+<div>
 
 <h1>XQuery Tester</h1>
 
@@ -261,8 +295,6 @@ $(window).load(function() {
     
     <input id="wiki_api_title" type="text" size="20" value="User:Brettz9/testpage" />
     
-    <input id="wiki_api_parsed" type="checkbox" />
-    <label for="wiki_api_parsed">Parsed text (good for XHTML and safer as goes through Mediawiki's filtering, providing the visual output, but not usable with other XML like TEI)?</label>
     <br /><br />
     <div>
         <div class="xquery">
@@ -300,6 +332,9 @@ return $a
 &lt;/b></textarea>
     </div>
     <input id="getXMLDocument" type="button" value="Get XML document" />
+    <input id="wiki_api_parsed" type="checkbox" />
+    <label for="wiki_api_parsed">Parsed text (good for XHTML and safer as goes through Mediawiki's filtering, providing the visual output, but not usable with other XML like TEI)?</label>
+
     <input id="evaluate" type="button" value="Evaluate" />
     <input id="previewSource-on" class="preview-checkbox" type="checkbox" /><label for="previewSource-on">Preview source on? (Do not do with untrusted code or data!)</label>
     <input id="previewResults-on" class="preview-checkbox" type="checkbox" /><label for="previewResults-on">Preview results on? (Do not do with untrusted code or data!)</label>
