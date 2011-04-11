@@ -1,0 +1,66 @@
+CACHE MANIFEST
+# Three sections (CACHE is implied if without headings):
+# CACHE
+# NETWORK
+# FALLBACK
+
+CACHE:
+# HTML only needed for multi-file apps (if all files 
+# might not be visited online, but possibly needed when offline)
+# index.html
+
+http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js
+# Keep a copy of this too in case CDN is offline
+jquery.min.js
+
+CodeMirror/js/codemirror.js
+CodeMirror/js/editor.js
+CodeMirror/js/parsexml.js
+CodeMirror/js/select.js
+CodeMirror/js/stringstream.js
+CodeMirror/js/tokenize.js
+CodeMirror/js/undo.js
+CodeMirror/js/util.js
+CodeMirror/css/xmlcolors.css
+CodeMirror/contrib/xquery/js/parsexquery.js
+CodeMirror/contrib/xquery/js/tokenizexquery.js
+CodeMirror/contrib/xquery/css/xqcolors.css
+
+xqueryhelperjs/xqib-0.7-alpha2/mxqueryjs/mxqueryjs.nocache.js
+# xqueryhelperjs/xqib-0.7-alpha2/mxqueryjs/59B3E0960BEEC4D697D170AF5818A4B9.cache.html
+# xqueryhelperjs/xqib-0.7-alpha2/mxqueryjs/A141FD234479F0346BACC26E8FE21113.cache.html
+# xqueryhelperjs/xqib-0.7-alpha2/mxqueryjs/C0BCE51DFF7D915E72C2863851952EB7.cache.html
+
+
+# Chrome uses
+xqueryhelperjs/xqib-0.7-alpha2/mxqueryjs/CF267A1CC4B90AE3EEC4D14644D1D5E1.cache.html
+
+
+# Firefox uses
+xqueryhelperjs/xqib-0.7-alpha2/mxqueryjs/DFD1E0C473F2869921678DD3A25DA6F6.cache.html
+
+# Necessary?
+# xqueryhelperjs/xqib-0.7-alpha2/mxqueryjs/clear.cache.gif
+# xqueryhelperjs/xqib-0.7-alpha2/mxqueryjs/hosted.html
+
+
+xqueryhelperjs/XQueryHelper.js
+
+xqueryeditor.js
+xqueryeditor.css
+
+# If not online, no use for Mediawiki API, but we can cache it for offline-enabled online use
+mediawikiapi/mediawikiapi.js
+
+NETWORK:
+
+# Allow online resources like JSONP where available (if online); however, this
+# won't work with cross-domain resources, so would need to make a proxy
+# to simultaneously get live cross-domain data while taking advantage of 
+# priorly offline-cached files (or host on same domain or store files in local
+# storage instead)
+*
+
+FALLBACK:
+http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js jquery.min.js
+

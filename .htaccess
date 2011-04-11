@@ -1,0 +1,12 @@
+# Comment out this <Files> for production; but helpful for debugging
+#<Files cache.manifest>
+#ExpiresActive On
+#ExpiresDefault "access"
+#</Files>
+
+#ExpiresActive On
+#ExpiresDefault "access"
+
+
+AddType text/cache-manifest .manifest
+

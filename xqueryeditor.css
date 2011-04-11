@@ -1,0 +1,154 @@
+/*
+("Unlicense")
+This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or
+distribute this software, either in source code form or as a compiled
+binary, for any purpose, commercial or non-commercial, and by any
+means.
+
+In jurisdictions that recognize copyright laws, the author or authors
+of this software dedicate any and all copyright interest in the
+software to the public domain. We make this dedication for the benefit
+of the public at large and to the detriment of our heirs and
+successors. We intend this dedication to be an overt act of
+relinquishment in perpetuity of all present and future rights to this
+software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+*/
+
+h1 {
+    text-align:center;
+}
+h2 {
+    font-size: 12pt;
+}
+
+/* Ribbon from http://unindented.org/articles/2009/10/github-ribbon-using-css-transforms/ */
+.ribbon {
+    background-color: #a00;
+    overflow: hidden;
+    /* top left corner */
+    position: absolute;
+    left: -3em;
+    top: 2.5em;
+    /* 45 deg ccw rotation */
+    -moz-transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+    /* shadow */
+    -moz-box-shadow: 0 0 1em #888;
+    -webkit-box-shadow: 0 0 1em #888;
+}
+.ribbon a {
+    border: 1px solid #faa;
+    color: #fff;
+    display: block;
+    font: bold 81.25% 'Helvetiva Neue', Helvetica, Arial, sans-serif;
+    margin: 0.05em 0 0.075em 0;
+    padding: 0.5em 3.5em;
+    text-align: center;
+    text-decoration: none;
+    /* shadow */
+    text-shadow: 0 0 0.5em #444;
+}
+
+.CodeMirror-line-numbers {
+    width: 2.2em;
+    color: #aaa;
+    background-color: #eee;
+    text-align: right;
+    padding-right: .3em;
+    font-size: 10pt;
+    font-family: monospace;
+    padding-top: .4em;
+    line-height: normal;
+}
+.css-switch {
+    margin-right:15px;
+    padding-bottom:5px;
+}
+
+
+.xquery {
+    margin-right: 1%;
+    margin-left: 10%;
+}
+.xml {
+    margin-right: 1%;
+    margin-left: 1%;
+    margin-top: 6px;
+}
+.results {
+    margin-right: 10%;
+    margin-left: 1%;
+}
+
+#results-place-holder {
+    margin-top: 415px;
+}
+#results-place-holder-inner {
+    margin-top: 58px;
+}
+
+.query {
+    border: 1px solid black;
+    float:left;
+    width: 29%;
+}
+#evaluateBox {
+    text-align:right;
+}
+#evaluate {
+    border: 2px solid black;
+}
+#previewHeading {
+    clear:both;
+}
+.preview {
+    float:left;
+    width:48%;
+    margin-left: 10px;
+    margin-right: 10px;
+    border:2px outset black;
+    overflow:auto;
+    height:100px;
+    min-height:10px;
+    max-height:100px;
+}
+#initial-par {
+    margin-top: 80px;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+#xquery-category-tree, #xml-category-tree {
+    font-size: small;
+}
+.category {
+    color:green;
+}
+.subpage {
+    font-style: italic;
+}
+.categoryTree, #resultChildren {
+    overflow: auto;
+    height: 150px;
+    border: 1px solid black;
+    margin: 2px;
+}
+
+
+h2, .collapsible {
+    background-color:green;
+    color:yellow;
+    text-align:center;
+}
+.collapsible:hover {
+    color:red;
+}
