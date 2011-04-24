@@ -85,7 +85,7 @@ $(window).load(function() {
     // DECLARATIONS/INITIALIZATIONS
     var xqueryEditor, xmlEditor, resultsBox,
         alternate = false,
-        xh = XQueryHelper(),
+        // xh = XQueryHelper(),
         finished = true,
         height = '300px',
         xhtmlns = 'http://www.w3.org/1999/xhtml';
@@ -121,10 +121,16 @@ $(window).load(function() {
             categoryLinksID = '#' + type + '-root-category-links',
             editor = (type === 'xml') ? xmlEditor : xqueryEditor,
             editorSetter = _getEditorSetter(type),
+            fileCb = function (content) {
+                editor.setCode(content);
+            },
             subpagesErrorCb = function (e, data, url, info, code, error) {
-                alert(e);
+                alert(data);
             },
             categoryErrorCb = function (e, data, url, info, code, error) {
+                alert(e);
+            },
+            fileErrorCb = function (e, data, url, info, code, error) {
                 alert(e);
             };
         
@@ -133,7 +139,7 @@ $(window).load(function() {
                 rootTitle = $(rootID).val(),
                 mwa = MediawikiAPI(url);
             
-            mwa.buildCategoryTree(rootTitle, categoryTree, editorSetter, categoryErrorCb, subpagesErrorCb);
+            mwa.buildCategoryTree(rootTitle, categoryTree, editorSetter, fileCb, categoryErrorCb, subpagesErrorCb, fileErrorCb);
             $(categoryLinksID).empty().append('Parent categories: ');
             mwa.getPageCategories(
                 rootTitle, 

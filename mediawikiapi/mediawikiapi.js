@@ -200,12 +200,12 @@ OTHER DEALINGS IN THE SOFTWARE.
         this.pageNS = '0|1|2|3|4|5|6|7|8|9|10|11|12|13|15|100|101|102|103|104|105|106|107';
         return this; // Please Netbeans
     }
-    MediawikiAPI.prototype.buildCategoryTree = function(rootTitle, node, subpagesCb, categoryErrorCb, subpagesErrorCb, catLink) {
+    MediawikiAPI.prototype.buildCategoryTree = function(rootTitle, node, subpagesCb, fileCb, categoryErrorCb, subpagesErrorCb, fileErrorCb, catLink) {
         var ul = _el('ul'), that = this;
         this.getSubcategories(rootTitle, 
             _getListItemBuilder(ul, 
                 'category', function (subcatTitle, li, a) {
-                    that.buildCategoryTree(subcatTitle, li, subpagesCb, categoryErrorCb, subpagesErrorCb);
+                    that.buildCategoryTree(subcatTitle, li, subpagesCb, fileCb, categoryErrorCb, subpagesErrorCb, fileErrorCb, catLink);
                 }, 
                 // Catlink will allow links to category page content
                 catLink ? '(pg)' : null, function (pageTitle, li, a) {
@@ -222,13 +222,13 @@ OTHER DEALINGS IN THE SOFTWARE.
                             subpagesCb(subpageTitle, li, a);
                         },
                         function needFileLink (prefix, suffix, subcatTitle, type) {
-                            if (prefix === 'File' && suffix === 'svg') {
+                            if (prefix === 'File' && ['svg', 'tei'].indexOf(suffix) >= 0) {
                                 return '(file)';
                             }
                             return false;
                         }, 
                         function fileLinkHandler (fileTitle, li, a2) {
-                            that.getFile(fileTitle, function (imageURL) {}, errorCb);
+                            that.getFileContent(fileTitle, fileCb, fileErrorCb);
                         }
                         /*,
                         '(content)', function () {
@@ -246,13 +246,33 @@ OTHER DEALINGS IN THE SOFTWARE.
         node.appendChild(ul);
     };
     
-    MediawikiAPI.prototype.getFileContent = function (fileURL, cb, errorCb) {
+    MediawikiAPI.prototype.getFileContent = function (fileTitle, cb, errorCb) {
         // Fix: need to add as an extension since API does not provide 
         // contents (which is especially of interest in the case of SVG)
-        alert("Unimplemented; Mediawiki API does not provide access to file contents");
+        
+        var url = this.baseURL + _buildString(
+            {action:'query', format:'json', 
+                titles : fileTitle,
+                prop: 'imageinfo',
+                iiprop: 'url|image' // Fix: currently both required, but should only need "image"
+            }
+        );
+        JSONP(url, function (data) {
+            try {
+                for (var page in data.query.pages) {
+                    var content = data.query.pages[page].imageinfo.image['*']; // Fix; Custom property/not standard!!!!
+                    cb(content, errorCb);
+                    break;
+                }
+            }
+            catch (e) {
+                _errorHandler(errorCb, data, e, url);
+            }
+        });
+        
     };
     MediawikiAPI.prototype.getFile = function (fileTitle, cb, errorCb) {
-        var that = this, url = this.baseURL + _buildString(
+        var url = this.baseURL + _buildString(
             {action:'query', format:'json', 
                 titles : fileTitle,
                 prop: 'imageinfo',
@@ -261,7 +281,7 @@ OTHER DEALINGS IN THE SOFTWARE.
         JSONP(url, function (data) {
             try {
                 var imageURL = data.query.pages['-1'].imageinfo[0].url;
-                that.getFileContent(imageURL, cb, errorCb);
+                cb(imageURL, errorCb);
             }
             catch (e) {
                 _errorHandler(errorCb, data, e, url);
