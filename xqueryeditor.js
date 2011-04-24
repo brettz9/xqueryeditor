@@ -28,7 +28,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 /*
 // Fix:
 
-0) Support external files (e.g., SVG); apparently needs Mediawiki source alteration
+0) Support external files (e.g., SVG); apparently needs Mediawiki source 
+    alteration (submit patch, but ensure it allows "image" as a stand-alone option)
 
 0) Did parse not work in some situations--need expandtemplates? Fix pre-parsing of wikis (and handling expandtemplates in older wikis)
 0) Could add appropriate default titles (and adjust root categories too, e.g., to the XML Formats root); reorganize those wikis to ensure 
