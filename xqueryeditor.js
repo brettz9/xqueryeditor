@@ -36,14 +36,16 @@ they have categories like  XML Format->SVG Format, etc. (not just XML, SVG)); an
 to current (root?) category's parents, a lower choice than root still allows access to root; should be able to use Special:MIMESearch but doesn't seem
 to work well on at least Wikimedia wikis
 
-1) Add HTML santization (for my XQuery hack internally (find usage internally of b:dom()?) as well as for previews); try subsetting RelaxNG of HTML and
+0) Feasibility of IE9 support (and deal with Firefox issues)?
+1) Add IndexedDB storage, with periodic checks to get latest data if online and with if-not-modified-since headers
+2) Add support for collections (local or live remote JSONP) associated with categories or user-defined; 
+    allow queries across collections, putting docs into a dummy container
+3) Add support for jQuery-style searching as a (more familiar but less powerful) alternative to XQuery
+4) Allow full-text searches for tabular display (and mode for showing nothing but preview and results)
+5) Add HTML santization (for my XQuery hack internally (find usage internally of b:dom()?) as well as for previews); try subsetting RelaxNG of HTML and
 using techniques of HTMLPurifier.org to e.g., eliminate "javascript:" from beginning of 'href' attributes, dangerous CSS (need CSS Parser), etc.
-2) Add IndexedDB storage, with periodic checks to get latest data if online and with if-not-modified-since headers
-3) Add support for collections associated with categories or user-defined; allow queries across collections, putting docs into a dummy container
-4) Add support for distributed wikis--Pubsub for repositories and other XMPP for pull requests; private note-taking, while sending out in 
+6) Add support for distributed wikis--Pubsub for repositories and other XMPP for pull requests; private note-taking, while sending out in 
 real time non-private changes made locally from own "server" to real server; one is always free to change the host, as storing copies all locally
-5) Add support for jQuery-style searching as a (more familiar but less powerful) alternative to XQuery
-6) Allow full-text searches for tabular display (and mode for showing nothing but preview and results)
 7) Create "standard" Shared Worker library for allowing permissions to database, so other apps can request this data (e.g., if Mediawiki makes 
 this API available, others can communicate with it to utilize the user's texts without needing to redownload; an HTML5 "shared database" 
 which managed privileges by requesting different levels of access from the user (e.g., "This site would like read-only permission to your data table
