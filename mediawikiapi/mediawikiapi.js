@@ -222,7 +222,7 @@ OTHER DEALINGS IN THE SOFTWARE.
                             subpagesCb(subpageTitle, li, a);
                         },
                         function needFileLink (prefix, suffix, subcatTitle, type) {
-                            if (prefix === 'File' && ['svg', 'tei'].indexOf(suffix) >= 0) {
+                            if (['File', 'Image'].indexOf(prefix) >= 0 && ['svg', 'tei'].indexOf(suffix) >= 0) {
                                 return '(file)';
                             }
                             return false;
@@ -343,7 +343,7 @@ data.warnings.imageinfo['*']
             this.getUnparsedPage(title, cb, errorCb);
             return;
         }
-        var that = this, url = this.baseURL + _buildString({action:'parse', format:'json', text: '{{'+title+'}}'});
+        var that = this, url = this.baseURL + _buildString({action:'parse', format:'json', page:title}); // text: '{{' + title + '}}'
         JSONP(url, function (data) {
             try {
                 cb(data.parse.text['*'], data);
