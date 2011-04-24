@@ -86,6 +86,7 @@ OTHER DEALINGS IN THE SOFTWARE.
     function _buildString (obj) {
         var str = '?';
         for (var param in obj) {
+            // str += encodeURIComponent(param) + '=' + encodeURIComponent(obj[param]) + '&';
             str += param + '=' + obj[param] + '&';
         }
         return str.slice(0, -1);
@@ -113,9 +114,10 @@ OTHER DEALINGS IN THE SOFTWARE.
             return node.attachEvent('on' + type, cb);
         }
         node['on'+type] = cb;
+        return false;
     }
 
-    function _getListItemBuilder (type, ul, ev) {
+    function _getListItemBuilder (ul, type, ev, ev2Return, ev2) {
         return function (subcatTitle) {
             var li = _el('li');
             var a = _el('a');
@@ -128,6 +130,27 @@ OTHER DEALINGS IN THE SOFTWARE.
                 });
             }
             li.appendChild(a);
+            var prefix = subcatTitle.match(/^(.*?):/);
+            prefix = prefix && prefix[1];
+            var suffix = subcatTitle.match(/\.([^.]*?)$/);
+            suffix = suffix && suffix[1];
+            var ev2Text = typeof ev2Return === 'function' ?
+                        ev2Return(prefix, suffix, subcatTitle, type) : 
+                        ev2Return;
+            if (ev2Text) {
+                li.appendChild(_text(' '));
+                var a2 = _el('a');
+                a2.className = type;
+                a2.href = 'javascript:void(0);';
+                a2.appendChild(_text(ev2Text));
+                if (ev2) {
+                    _addEvent(a2, 'click', function () {
+                        ev2(subcatTitle, li, a2);
+                    });
+                }
+                li.appendChild(a2);
+            }
+            
             ul.appendChild(li);
         };
     }
@@ -156,32 +179,62 @@ OTHER DEALINGS IN THE SOFTWARE.
         }
     }
     
-    var _pageNS = '0', _categoryNS = '14';
+    var _categoryNS = '14';
 
     function MediawikiAPI (baseURL) {
         if (!(this instanceof MediawikiAPI)) {
             return new MediawikiAPI(baseURL);
         }
-        if (!(/^https?:\/\//).test(baseURL)) {
+        if (!(/^http:\/\//).test(baseURL)) {
             baseURL = 'http://' + baseURL;
         }
         if (baseURL.indexOf('api.php') < 0) {
             baseURL += ((baseURL.charAt(baseURL.length-1) === '/') ? '' : '/') + 'w/api.php';
         }
         this.baseURL = baseURL;
+        
+        if ((/wiki(books|media|pedia|source).org/g).test(baseURL)) {
+            this.newAPI = true;
+        }
+
+        this.pageNS = '0|1|2|3|4|5|6|7|8|9|10|11|12|13|15|100|101|102|103|104|105|106|107';
+        return this; // Please Netbeans
     }
-    MediawikiAPI.prototype.buildCategoryTree = function(rootTitle, node, subpagesCb, categoryErrorCb, subpagesErrorCb) {
+    MediawikiAPI.prototype.buildCategoryTree = function(rootTitle, node, subpagesCb, categoryErrorCb, subpagesErrorCb, catLink) {
         var ul = _el('ul'), that = this;
         this.getSubcategories(rootTitle, 
-            _getListItemBuilder('category', ul, function (subcatTitle, li, a) {
-                that.buildCategoryTree(subcatTitle, li, subpagesCb, categoryErrorCb, subpagesErrorCb);
-            }),
+            _getListItemBuilder(ul, 
+                'category', function (subcatTitle, li, a) {
+                    that.buildCategoryTree(subcatTitle, li, subpagesCb, categoryErrorCb, subpagesErrorCb);
+                }, 
+                // Catlink will allow links to category page content
+                catLink ? '(pg)' : null, function (pageTitle, li, a) {
+                    subpagesCb(pageTitle, li, a);
+                }
+            ),
             function finished (i, subcats) {
                 that.getSubpages(
-                    rootTitle, 
-                    _getListItemBuilder('subpage', ul, function (subpageTitle, li, a) {
-                        subpagesCb(subpageTitle, li, a);
-                    }),
+                    rootTitle,
+                    _getListItemBuilder(
+                        ul, 
+                        'subpage', 
+                        function subpageClickHandler (subpageTitle, li, a) {
+                            subpagesCb(subpageTitle, li, a);
+                        },
+                        function needFileLink (prefix, suffix, subcatTitle, type) {
+                            if (prefix === 'File' && suffix === 'svg') {
+                                return '(file)';
+                            }
+                            return false;
+                        }, 
+                        function fileLinkHandler (fileTitle, li, a2) {
+                            that.getFile(fileTitle, function (imageURL) {}, errorCb);
+                        }
+                        /*,
+                        '(content)', function () {
+                            alert('link');
+                        }*/
+                    ),
                     function finished (i, subpages) {},
                     subpagesErrorCb
                 );
@@ -191,6 +244,29 @@ OTHER DEALINGS IN THE SOFTWARE.
         node = _getNode(node);
         _empty(node, 'ul');
         node.appendChild(ul);
+    };
+    
+    MediawikiAPI.prototype.getFileContent = function (fileURL, cb, errorCb) {
+        // Fix: need to add as an extension since API does not provide 
+        // contents (which is especially of interest in the case of SVG)
+        alert("Unimplemented; Mediawiki API does not provide access to file contents");
+    };
+    MediawikiAPI.prototype.getFile = function (fileTitle, cb, errorCb) {
+        var that = this, url = this.baseURL + _buildString(
+            {action:'query', format:'json', 
+                titles : fileTitle,
+                prop: 'imageinfo',
+                iiprop: 'url'}
+        );
+        JSONP(url, function (data) {
+            try {
+                var imageURL = data.query.pages['-1'].imageinfo[0].url;
+                that.getFileContent(imageURL, cb, errorCb);
+            }
+            catch (e) {
+                _errorHandler(errorCb, data, e, url);
+            }
+        });
     };
     
     /*
@@ -209,6 +285,7 @@ data.warnings.imageinfo['*']
         //  cmtitle and cmcategory is required for backward compatibility; cmtitle is more rigorous in requiring 'Category:' prefix
         var url = this.baseURL + _buildString(
             {action:'query', format:'json', list:'categorymembers', cmnamespace: ns, 
+                cmlimit: 100, // default: 10, max for non-bots: 500
                 cmtitle:rootTitle, cmcategory:rootTitle.replace(/^Category:/, '')}
         );
         JSONP(url, function (data) {
@@ -225,13 +302,40 @@ data.warnings.imageinfo['*']
         });
     };    
     MediawikiAPI.prototype.getSubpages = function(rootTitle, cb, finished, errorCb) {
-        return this.getCategoryMembers(rootTitle, _pageNS, cb, finished, errorCb);
+        // Fix: We should probably avoid this newErrorCb step somehow by either 
+        //        checking version of the API (how?) to see whether it ought to 
+        //        support the extra namespaces (though we at least exclude the 
+        //        Wikimedia ones now which do support them)
+        var that = this;
+        var newErrorCb = this.newAPI ? errorCb : function () {
+            // Try old since 100|101|102|103|104|105|106|107 cause errors though listed on http://commons.wikimedia.org/w/api.php
+            var ns = '0|1|2|3|4|5|6|7|8|9|10|11|12|13|15';
+            that.getCategoryMembers(rootTitle, ns, cb, finished, errorCb);
+        };
+        return this.getCategoryMembers(rootTitle, this.pageNS, cb, finished, newErrorCb);
     };
     MediawikiAPI.prototype.getSubcategories = function(rootTitle, cb, finished, errorCb) {
         return this.getCategoryMembers(rootTitle, _categoryNS, cb, finished, errorCb);
     };
     
     MediawikiAPI.prototype.getParsedPage = function(title, cb, errorCb) {
+        if (this.useGetUnparsedPage) {
+            this.getUnparsedPage(title, cb, errorCb);
+            return;
+        }
+        var that = this, url = this.baseURL + _buildString({action:'parse', format:'json', text: '{{'+title+'}}'});
+        JSONP(url, function (data) {
+            try {
+                cb(data.parse.text['*'], data);
+            }
+            catch(e) {
+                that.useGetUnparsedPage = true;
+                that.getUnparsedPage(title, cb, errorCb);
+            }
+        });
+    };
+    
+    MediawikiAPI.prototype.expandTemplates = function(title, cb, errorCb) {
         var url = this.baseURL + _buildString({action:'expandtemplates', format:'json', text: '{{'+title+'}}'});
         JSONP(url, function (data) {
             try {
@@ -246,6 +350,7 @@ data.warnings.imageinfo['*']
     MediawikiAPI.prototype.getPageCategories = function(title, cb, finishedCb, errorCb) {
         var url = this.baseURL + _buildString({
             action:'query', prop:'categories',
+            cllimit: 50, // default: 10, max for non-bots: 500
             format:'json', 
             titles: encodeURIComponent(title)
         });

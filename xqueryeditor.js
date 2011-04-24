@@ -1,4 +1,4 @@
-/*globals CodeMirror, MediawikiAPI, XQueryHelper, XMLSerializer, DOMParser */
+/*globals $, CodeMirror, MediawikiAPI, XQueryHelper, XMLSerializer, DOMParser */
 /*
 ("Unlicense")
 This is free and unencumbered software released into the public domain.
@@ -26,28 +26,25 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 /*
-// Fix: 
-0) Figure out why Commons, etc. is not always working; redirects?
-CommonsRoot
-    Copyright statuses
-        Against DRM
-0) Fix pre-parsing of wikis (and handling expandtemplates in older wikis)
-0) Support external files (e.g., SVG)
+// Fix:
 
+0) Support external files (e.g., SVG); apparently needs Mediawiki source alteration
 
-1) Add HTML santization (for my XQuery hack internally (find usage internally of b:dom()?), as well as for previews); try subsetting RelaxNG of HTML and
-using techniques of HTMLPurifier.org to e.g., eliminate "javascript:" from beginning of 'href' attributes, dangerous CSS (need CSS Parser), etc.
-2) Could add appropriate default titles (and adjust root categories too, e.g., to the XML Formats root); reorganize those wikis to ensure 
+0) Did parse not work in some situations--need expandtemplates? Fix pre-parsing of wikis (and handling expandtemplates in older wikis)
+0) Could add appropriate default titles (and adjust root categories too, e.g., to the XML Formats root); reorganize those wikis to ensure 
 they have categories like  XML Format->SVG Format, etc. (not just XML, SVG)); and good sample pages; with ability now to click on links 
 to current (root?) category's parents, a lower choice than root still allows access to root; should be able to use Special:MIMESearch but doesn't seem
 to work well on at least Wikimedia wikis
-3) Add IndexedDB storage, with periodic checks to get latest data if online and with if-not-modified-since headers
-4) Add support for collections associated with categories or user-defined; allow queries across collections, putting docs into a dummy container
-5) Add support for distributed wikis--Pubsub for repositories and other XMPP for pull requests; private note-taking, while sending out in 
+
+1) Add HTML santization (for my XQuery hack internally (find usage internally of b:dom()?) as well as for previews); try subsetting RelaxNG of HTML and
+using techniques of HTMLPurifier.org to e.g., eliminate "javascript:" from beginning of 'href' attributes, dangerous CSS (need CSS Parser), etc.
+2) Add IndexedDB storage, with periodic checks to get latest data if online and with if-not-modified-since headers
+3) Add support for collections associated with categories or user-defined; allow queries across collections, putting docs into a dummy container
+4) Add support for distributed wikis--Pubsub for repositories and other XMPP for pull requests; private note-taking, while sending out in 
 real time non-private changes made locally from own "server" to real server; one is always free to change the host, as storing copies all locally
-6) Add support for jQuery-style searching as a (more familiar but less powerful) alternative to XQuery
-7) Allow full-text searches for tabular display (and mode for showing nothing but preview and results)
-8) Create "standard" Shared Worker library for allowing permissions to database, so other apps can request this data (e.g., if Mediawiki makes 
+5) Add support for jQuery-style searching as a (more familiar but less powerful) alternative to XQuery
+6) Allow full-text searches for tabular display (and mode for showing nothing but preview and results)
+7) Create "standard" Shared Worker library for allowing permissions to database, so other apps can request this data (e.g., if Mediawiki makes 
 this API available, others can communicate with it to utilize the user's texts without needing to redownload; an HTML5 "shared database" 
 which managed privileges by requesting different levels of access from the user (e.g., "This site would like read-only permission to your data table
 'My personal notes' created by the application at 'http://calendar.example.com'; do you accept?" would be, imo, much easier for everyone wishing
@@ -59,7 +56,8 @@ does the SharedWorker mean the other app must be in a tab, in an iframe? How to 
 // For debugging, ensure it checks in a timely manner; having problems with Apache settings, 
 // so we want to ensure the manifest file itself is not cached during debugging
 // Fix: comment this out for production
-applicationCache.update();
+
+// applicationCache.update();
 
 
 $(applicationCache).bind('updateready',
@@ -81,7 +79,7 @@ $(window).load(function() {
         for (var p in obj) {
             str += p + '::' + obj[p] + '\n';
         }
-        return str;
+        alert(str);
     }
 
     // DECLARATIONS/INITIALIZATIONS
@@ -114,6 +112,7 @@ $(window).load(function() {
             );
         };
     }
+
     
     function _getCategoryUpdateTree (type) {
         var categoryTree = '#' + type + '-category-tree',
@@ -139,8 +138,9 @@ $(window).load(function() {
             mwa.getPageCategories(
                 rootTitle, 
                 function (category, ns, catObj) {
-                    var a = $('<a href="javascript:void(0);">'+category+'</a>').click(function () {
+                    var a = $('<a class="parent-category" href="javascript:void(0);">'+category.replace(/^Category:/, '')+'</a>').click(function () {
                         $(rootID).val(category);
+                        _getCategoryUpdateTree(type)();
                     });
                     $(categoryLinksID).append(a, ' ');
                 },
@@ -165,6 +165,22 @@ $(window).load(function() {
 
     
     // SET UP CODE HIGHLIGHTERS
+    // 
+    // We at least add styling for unvisited links and fix base URL inline
+    var style = '<style type="text/css" media="all">a.new,#quickbar a.new{color:#ba0000}</style>';
+    function _wrapCode (code) {
+        /*
+        // Converts our own links
+        var base = document.createElementNS(xhtmlns, 'base');
+        base.href = (url.match(/^https?:\/\//) ? url : 'http://' + url) +'/';
+        document.documentElement.firstChild.appendChild(base);
+        */
+        // We can replace the links inline instead:
+        
+        var url = $('#wiki-api-url-xml').val()        
+        return style + code.replace(/<a href="\//g, '<a href="'+ (url.match(/^https?:\/\//) ? url : 'http://' + url) +'/');                        
+    }
+    
     xqueryEditor = CodeMirror.fromTextArea('xquery', 
         {
             height: height,
@@ -185,7 +201,7 @@ $(window).load(function() {
             lineNumbers: true,
             onChange : function () {
                 if ($("#previewSource-on").is(':checked')) {
-                    $('#previewSource').html(xmlEditor.getCode());
+                    $('#previewSource').html(_wrapCode(xmlEditor.getCode()));
                 }
             }
         }
@@ -200,7 +216,7 @@ $(window).load(function() {
             lineNumbers: true,
             onChange : function () {
                 if ($("#previewResults-on").is(':checked')) {
-                    $('#previewResults').html(resultsBox.getCode());
+                    $('#previewResults').html()(_wrapCode(resultsBox.getCode()));
                 }
             }
         }
@@ -240,7 +256,16 @@ $(window).load(function() {
         $('#wiki-api-url-' + type).val(url || '');
         $('#wiki-api-root-category-' + type).val(category || '');
         $('#wiki-api-title-' + type).val(title || '');
+        _getCategoryUpdateTree(type)();
     });
+
+    /*
+    // Updating when input box changes is not adequate, since user 
+    //    may want a different root (though can rely on drop-down)
+    $('.wiki-api-url').change(function (e) {
+        _getCategoryUpdateTree(e.target.getAttribute('data-type'))();
+    });
+    */
 
     // Force an onChange event for the XML and Results editors, so they can update their respective preview windows
     $('.preview-checkbox').click(function (e) {
