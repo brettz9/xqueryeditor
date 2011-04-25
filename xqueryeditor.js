@@ -37,6 +37,7 @@ they have categories like  XML Format->SVG Format, etc. (not just XML, SVG)); an
 to current (root?) category's parents, a lower choice than root still allows access to root; should be able to use Special:MIMESearch but doesn't seem
 to work well on at least Wikimedia wikis
 
+0) Support Ckeditor "preview" of source and results, to allow immediate editability if desired
 0) Feasibility of IE9 support (and deal with Firefox issues)?
 1) Add IndexedDB storage, with periodic checks to get latest data if online and with if-not-modified-since headers
 2) Add support for collections (local or live remote JSONP) associated with categories or user-defined; 
