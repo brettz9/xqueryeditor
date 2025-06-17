@@ -64,12 +64,12 @@ does the SharedWorker mean the other app must be in a tab, in an iframe? How to 
 // applicationCache.update();
 
 
-$(applicationCache).bind('updateready',
-    // Ensure the new manifest is hot-swapped to be used immediately if it is updated and successfully downloaded
-    function (event) {
-        applicationCache.swapCache();
-    }
-);
+// $(applicationCache).bind('updateready',
+//     // Ensure the new manifest is hot-swapped to be used immediately if it is updated and successfully downloaded
+//     function (event) {
+//         applicationCache.swapCache();
+//     }
+// );
 
 $(window).load(function() {
     // DEBUGGING ONLY
