@@ -7,6 +7,5 @@
 #ExpiresActive On
 #ExpiresDefault "access"
 
-
 AddType text/cache-manifest .manifest
 
