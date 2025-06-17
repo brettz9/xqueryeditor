@@ -1,4 +1,4 @@
-See [http://brettz9.github.com/xqueryeditor/](http://brettz9.github.com/xqueryeditor/)
+See [https://brettz9.github.io/xqueryeditor/](https://brettz9.github.io/xqueryeditor/)
 
 ## Other ideas
 
