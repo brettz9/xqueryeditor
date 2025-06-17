@@ -182,13 +182,13 @@ $(window).load(function() {
         /*
         // Converts our own links
         var base = document.createElementNS(xhtmlns, 'base');
-        base.href = (url.match(/^https?:\/\//) ? url : 'http://' + url) +'/';
+        base.href = (url.match(/^https?:\/\//) ? url : 'https://' + url) +'/';
         document.documentElement.firstChild.appendChild(base);
         */
         // We can replace the links inline instead:
         
         var url = $('#wiki-api-url-xml').val()        
-        return style + code.replace(/<a href="\//g, '<a href="'+ (url.match(/^https?:\/\//) ? url : 'http://' + url) +'/');                        
+        return style + code.replace(/<a href="\//g, '<a href="'+ (url.match(/^https?:\/\//) ? url : 'https://' + url) +'/');                        
     }
     
     xqueryEditor = CodeMirror.fromTextArea('xquery', 
