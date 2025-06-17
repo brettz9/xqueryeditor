@@ -185,8 +185,8 @@ OTHER DEALINGS IN THE SOFTWARE.
         if (!(this instanceof MediawikiAPI)) {
             return new MediawikiAPI(baseURL);
         }
-        if (!(/^http:\/\//).test(baseURL)) {
-            baseURL = 'http://' + baseURL;
+        if (!(/^https:\/\//).test(baseURL)) {
+            baseURL = 'https://' + baseURL;
         }
         if (baseURL.indexOf('api.php') < 0) {
             baseURL += ((baseURL.charAt(baseURL.length-1) === '/') ? '' : '/') + 'w/api.php';
